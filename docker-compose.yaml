@@ -1,41 +1,51 @@
 services:
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.5.5
     container_name: loki
     restart: always
     ports:
-      - 3100:3100
+      - "3100:3100"
       - 7946
       - 9095
 
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:2.8.2
     container_name: tempo
     restart: always
-    command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./config/tempo/tempo.yaml:/etc/tempo.yaml
+    command: ["-config.file=/etc/tempo.yaml"]
 
-  promtail:
-    image: grafana/promtail:latest
-    container_name: promtail
+  mimir:
+    image: grafana/mimir:latest
+    container_name: mimir
+    restart: always
+    ports:
+      - "9090:9090"
+    command: ["-config.file=/etc/mimir.yaml"]
     volumes:
-      - /var/log:/var/log
-    command: ["-config.file=/etc/promtail/config.yml"]
+      - ./config/mimir/mimir.yaml:/etc/mimir.yaml
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.1.1
     container_name: grafana
     restart: always
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - ./config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_AUTH_DISABLED_FORM_LOGIN=true
+      - GF_AUTH_DISABLE_FORM_LOGIN=true
       - GF_SECURITY_ALLOW_EMBEDDING=true
     depends_on:
       - loki
       - tempo
+
+  promtail:
+    image: grafana/promtail:3.5.5
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+    command: ["-config.file=/etc/promtail/config.yaml"]
