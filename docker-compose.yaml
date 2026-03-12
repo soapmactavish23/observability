@@ -69,4 +69,5 @@ services:
     container_name: promtail
     volumes:
       - /var/log:/var/log
+      - ./config/promtail/config.yaml:/etc/promtail/config.yaml
     command: ["-config.file=/etc/promtail/config.yaml"]
