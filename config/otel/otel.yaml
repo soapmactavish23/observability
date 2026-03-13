@@ -5,9 +5,19 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: "otel-collector"
+          scrape_interval: 10s
+          static_configs:
+            - targets: ["localhost:8888"]
 
 processors:
   batch:
+    send_batch_max_size: 100
+    send_batch_size: 10
+    timeout: 10s
   resource:
     attributes:
       - action: insert
@@ -28,6 +38,14 @@ exporters:
     tls:
       insecure: true
 
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
+  otlphttp/metrics:
+    endpoint: http://mimir:9009/otlp/v1/metrics
+    tls:
+      insecure: true
   prometheusremotewrite/metrics:
     endpoint: http://mimir:9090/api/v1/push
     tls:
@@ -54,4 +72,4 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, prometheusremotewrite/metrics]
+      exporters: [debug, prometheusremotewrite/metrics, prometheus]
