@@ -30,7 +30,7 @@ ingester:
 
 server:
   http_listen_port: 9090
-  log_level: error
+  log_level: info
 
 store_gateway:
   sharding_ring:

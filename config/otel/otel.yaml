@@ -28,8 +28,8 @@ exporters:
     tls:
       insecure: true
 
-  otlp_http/metrics:
-    endpoint: http://mimir:9009/otlp
+  prometheusremotewrite/metrics:
+    endpoint: http://mimir:9090/api/v1/push
     tls:
       insecure: true
 
@@ -48,10 +48,10 @@ service:
 
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [resource, batch]
       exporters: [debug, otlp_grpc/traces]
 
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, otlp_http/metrics]
+      exporters: [debug, prometheusremotewrite/metrics]
