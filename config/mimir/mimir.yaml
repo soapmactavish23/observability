@@ -1,4 +1,5 @@
 multitenancy_enabled: false
+target: all
 
 blocks_storage:
   backend: filesystem
@@ -17,13 +18,13 @@ compactor:
 
 distributor:
   ring:
-    instance_addr: 127.0.0.1
+    instance_addr: mimir
     kvstore:
       store: memberlist
 
 ingester:
   ring:
-    instance_addr: 127.0.0.1
+    instance_addr: mimir
     kvstore:
       store: memberlist
     replication_factor: 1
@@ -36,3 +37,7 @@ server:
 store_gateway:
   sharding_ring:
     replication_factor: 1
+
+memberlist:
+  bind_addr:
+    - 0.0.0.0
