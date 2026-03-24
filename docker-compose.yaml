@@ -6,14 +6,14 @@ services:
     environment:
       MINIO_ROOT_USER: loki
       MINIO_ROOT_PASSWORD: ++loki++
-    command: server /data --address ":9000" --console-address ":9001"
+    command: server /data --address ":9100" --console-address ":9001"
     ports:
-      - "9000:9000"
+      - "9100:9100"
       - "9001:9001"
     volumes:
       - ./minio-data:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9100/minio/health/live"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -25,7 +25,7 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-        mc alias set minio http://minio:9000 loki ++loki++ &&
+        mc alias set minio http://minio:9100 loki ++loki++ &&
         mc mb minio/loki-data || true &&
         mc mb minio/loki-ruler || true &&
         exit 0
@@ -42,7 +42,7 @@ services:
       - minio
       - bucket
     ports:
-      - "3100:3100"
+      - "3101:3101"
       - "7946:7946"
       - "9095:9095"
 
@@ -52,7 +52,7 @@ services:
     restart: always
     command: ["-config.file=/etc/tempo.yaml"]
     expose:
-      - "3200"
+      - "3201"
       - "4317"
       - "4318"
     volumes:
@@ -86,7 +86,7 @@ services:
     container_name: grafana
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3001"
     volumes:
       - ./config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     environment:
@@ -121,17 +121,5 @@ services:
       - prometheus
       - mimir
       - grafana
-
-  promtail:
-    image: grafana/promtail:3.5.5
-    container_name: promtail
-    restart: always
-    volumes:
-      - ./config/promtail/config.yaml:/etc/promtail/config.yaml
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-    command: ["-config.file=/etc/promtail/config.yaml"]
-    depends_on:
-      - loki
 volumes:
   minio-data:

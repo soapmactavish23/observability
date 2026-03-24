@@ -23,7 +23,7 @@ exporters:
     verbosity: detailed
 
   otlp_http/loki:
-    endpoint: http://loki:3100/otlp
+    endpoint: http://loki:3101/otlp
     tls:
       insecure: true
 

@@ -4,7 +4,7 @@ datasources:
   - name: Loki
     type: loki
     access: proxy
-    url: http://loki:3100
+    url: http://loki:3101
     isDefault: false
     editable: false
     version: 1
@@ -13,7 +13,7 @@ datasources:
   - name: Tempo
     type: tempo
     access: proxy
-    url: http://tempo:3200
+    url: http://tempo:3201
     isDefault: true
     editable: false
     version: 1
